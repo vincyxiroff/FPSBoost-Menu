@@ -4,6 +4,22 @@ ESX = exports["es_extended"]:getSharedObject()
 
 TriggerEvent('chat:addSuggestion', '/fps', 'Open fps boost menu')
 
+local function EnumerateEntities(initFunc, moveFunc, disposeFunc)
+    return coroutine.wrap(function()
+        local iter, id = initFunc()
+        if not id or id == 0 then
+            disposeFunc(iter)
+            return
+        end
+        repeat
+            coroutine.yield(id)
+            local next
+            next, id = moveFunc(iter)
+        until not next
+        disposeFunc(iter)
+    end)
+end
+
 --Menu
 RegisterNetEvent('Hel1best:fpsmenu') 
 AddEventHandler('Hel1best:fpsmenu', function()
@@ -164,19 +180,3 @@ Citizen.CreateThread(function()
         end
     end
 end)
-
-local function EnumerateEntities(initFunc, moveFunc, disposeFunc)
-    return coroutine.wrap(function()
-        local iter, id = initFunc()
-        if not id or id == 0 then
-            disposeFunc(iter)
-            return
-        end
-        repeat
-            coroutine.yield(id)
-            local next
-            next, id = moveFunc(iter)
-        until not next
-        disposeFunc(iter)
-    end)
-end
