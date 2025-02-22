@@ -91,6 +91,10 @@ lib.registerContext({
   },
 })
 
+function GetWorldPeds()
+    return EnumerateEntities(FindFirstPed, FindNextPed, EndFindPed)
+end
+
 -- // Distance rendering and entity handler
 Citizen.CreateThread(function()
     while true do
