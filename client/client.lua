@@ -27,7 +27,6 @@ AddEventHandler('Hel1best:fps1', function()
   SetTimecycleModifier('yell_tunnel_nodirect')
   lib.notify({title = '',description = 'FPS Boost',type = 'success'})
   
-  -- Attiva la gestione di entità e rendering solo quando FPS Boost è attivo
   fpsBoostActive = true
 end)
 
@@ -54,7 +53,6 @@ AddEventHandler('Hel1best:fps4', function()
   ClearExtraTimecycleModifier()
   lib.notify({title = '',description = 'Reseted to default',type = 'success'})
   
-  -- Disattiva la gestione di entità e rendering quando FPS Boost viene disattivato
   fpsBoostActive = false
 end)
 
@@ -91,15 +89,11 @@ lib.registerContext({
   },
 })
 
-function GetWorldPeds()
-    return EnumerateEntities(FindFirstPed, FindNextPed, EndFindPed)
-end
-
 -- // Distance rendering and entity handler
 Citizen.CreateThread(function()
     while true do
         if fpsBoostActive then
-            for ped in GetWorldPeds() do
+            for ped in EnumerateEntities(FindFirstPed, FindNextPed, EndFindPed) do
                 if not IsEntityOnScreen(ped) then
                     SetEntityAlpha(ped, 0)
                     SetEntityAsNoLongerNeeded(ped)
@@ -114,7 +108,7 @@ Citizen.CreateThread(function()
                 Citizen.Wait(1)
             end
 
-            for obj in GetWorldObjects() do
+            for obj in EnumerateEntities(FindFirstObject, FindNextObject, EndFindObject) do
                 if not IsEntityOnScreen(obj) then
                     SetEntityAlpha(obj, 0)
                     SetEntityAsNoLongerNeeded(obj)
@@ -171,17 +165,6 @@ Citizen.CreateThread(function()
     end
 end)
 
--- // Entity Enumerator
-local entityEnumerator = {
-    __gc = function(enum)
-        if enum.destructor and enum.handle then
-            enum.destructor(enum.handle)
-        end
-        enum.destructor = nil
-        enum.handle = nil
-    end
-}
-
 local function EnumerateEntities(initFunc, moveFunc, disposeFunc)
     return coroutine.wrap(function()
         local iter, id = initFunc()
@@ -189,17 +172,11 @@ local function EnumerateEntities(initFunc, moveFunc, disposeFunc)
             disposeFunc(iter)
             return
         end
-        local enum = {handle = iter, destructor = disposeFunc}
-        setmetatable(enum, entityEnumerator)
         repeat
             coroutine.yield(id)
+            local next
             next, id = moveFunc(iter)
         until not next
-        enum.destructor, enum.handle = nil, nil
         disposeFunc(iter)
     end)
-end
-
-function GetWorldObjects()
-    return EnumerateEntities(FindFirstObject, FindNextObject, EndFindObject)
 end
