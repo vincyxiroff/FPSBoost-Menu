@@ -23,6 +23,7 @@ AddEventHandler('Hel1best:fps1', function()
   SetLightsCutoffDistanceTweak(0.0)
   DistantCopCarSirens(false)
   SetTimecycleModifier('yell_tunnel_nodirect')
+  exports['okokNotify']:Alert('FPS Boost', 'Boosted Successfully', 'success')
   lib.notify({title = '',description = 'FPS Boost',type = 'success'})
 end)
 
