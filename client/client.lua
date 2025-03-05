@@ -20,13 +20,13 @@ local function EnumerateEntities(initFunc, moveFunc, disposeFunc)
     end)
 end
 
---Menu
+-- Menu
 RegisterNetEvent('Hel1best:fpsmenu') 
 AddEventHandler('Hel1best:fpsmenu', function()
   lib.showContext('hel1bestfpsmenu')
 end)
 
---FPS Boost #1
+-- FPS Boost #1
 RegisterNetEvent('Hel1best:fps1') 
 AddEventHandler('Hel1best:fps1', function()
   RopeDrawShadowEnabled(false)
@@ -46,28 +46,50 @@ AddEventHandler('Hel1best:fps1', function()
   fpsBoostActive = true
 end)
 
---Lights Mode
+-- Lights Mode
 RegisterNetEvent('Hel1best:fps2') 
 AddEventHandler('Hel1best:fps2', function()
   SetTimecycleModifier('tunnel')
   lib.notify({title = '',description = 'Lights Mode',type = 'success'})
 end)
 
---Graphics
+-- Graphics (Migliorata)
 RegisterNetEvent('Hel1best:fps3') 
 AddEventHandler('Hel1best:fps3', function()
   SetTimecycleModifier('MP_Powerplay_blend')
   SetExtraTimecycleModifier('reflection_correct_ambient')
-  lib.notify({title = '',description = 'Graphics',type = 'success'})
+  SetArtificialLightsState(true)
+  CascadeShadowsSetAircraftMode(true)
+  CascadeShadowsEnableEntityTracker(true)
+  CascadeShadowsSetDynamicDepthMode(true)
+  CascadeShadowsSetEntityTrackerScale(5.0)
+  CascadeShadowsSetDynamicDepthValue(5.0)
+  CascadeShadowsSetCascadeBoundsScale(5.0)
+  SetFlashLightFadeDistance(10.0)
+  SetLightsCutoffDistanceTweak(10.0)
+  DistantCopCarSirens(true)
+  OverrideLodscaleThisFrame(1.0)
+  lib.notify({title = '',description = 'Graphics migliorate attivate',type = 'success'})
 end)
 
---Simple/Reset
+-- Simple/Reset
 RegisterNetEvent('Hel1best:fps4') 
 AddEventHandler('Hel1best:fps4', function()
   SetTimecycleModifier()
   ClearTimecycleModifier()
   ClearExtraTimecycleModifier()
-  lib.notify({title = '',description = 'Reseted to default',type = 'success'})
+  RopeDrawShadowEnabled(true)
+  CascadeShadowsSetAircraftMode(true)
+  CascadeShadowsEnableEntityTracker(true)
+  CascadeShadowsSetDynamicDepthMode(true)
+  CascadeShadowsSetEntityTrackerScale(5.0)
+  CascadeShadowsSetDynamicDepthValue(5.0)
+  CascadeShadowsSetCascadeBoundsScale(5.0)
+  SetFlashLightFadeDistance(10.0)
+  SetLightsCutoffDistanceTweak(10.0)
+  DistantCopCarSirens(true)
+  OverrideLodscaleThisFrame(1.0)
+  lib.notify({title = '',description = 'Resettato alle impostazioni predefinite',type = 'success'})
   
   fpsBoostActive = false
 end)
@@ -80,25 +102,25 @@ lib.registerContext({
   options = {
       {
           title = 'FPS Boost',
-          description = 'Helps best with boosting fps',
+          description = 'Aiuta a migliorare le prestazioni FPS',
           icon = 'fas fa-keyboard',
           event = 'Hel1best:fps1',
       },
       {
         title = 'Lights Mode',
-        description = 'Still looks good and boost your fps',
+        description = 'Mantiene una buona grafica e migliora le prestazioni',
         icon = 'far fa-lightbulb',
         event = 'Hel1best:fps2',
     },
     {
       title = 'Graphics',
-      description = 'Looks decent and boost fps',
+      description = 'Attiva la migliore qualità grafica',
       icon = 'far fa-newspaper',
       event = 'Hel1best:fps3',
   },
       {
           title = 'Reset',
-          description = '',
+          description = 'Ripristina le impostazioni predefinite',
           icon = 'fa fa-remove',
           event = 'Hel1best:fps4',
       },
@@ -109,30 +131,42 @@ lib.registerContext({
 Citizen.CreateThread(function()
     while true do
         if fpsBoostActive then
+            local playerCoords = GetEntityCoords(PlayerPedId())
+
             for ped in EnumerateEntities(FindFirstPed, FindNextPed, EndFindPed) do
-                if not IsEntityOnScreen(ped) then
-                    SetEntityAlpha(ped, 0)
-                    SetEntityAsNoLongerNeeded(ped)
-                else
-                    if GetEntityAlpha(ped) == 0 then
-                        SetEntityAlpha(ped, 255)
-                    elseif GetEntityAlpha(ped) ~= 210 then
-                        SetEntityAlpha(ped, 210)
+                local pedCoords = GetEntityCoords(ped)
+                local distance = #(playerCoords - pedCoords)
+
+                if distance > 50.0 then  -- Modifica questa distanza a tuo piacimento
+                    if not IsEntityOnScreen(ped) then
+                        SetEntityAlpha(ped, 0)
+                        SetEntityAsNoLongerNeeded(ped)
+                    else
+                        if GetEntityAlpha(ped) == 0 then
+                            SetEntityAlpha(ped, 255)
+                        elseif GetEntityAlpha(ped) ~= 210 then
+                            SetEntityAlpha(ped, 210)
+                        end
                     end
+                    SetPedAoBlobRendering(ped, false)
                 end
-                SetPedAoBlobRendering(ped, false)
                 Citizen.Wait(1)
             end
 
             for obj in EnumerateEntities(FindFirstObject, FindNextObject, EndFindObject) do
-                if not IsEntityOnScreen(obj) then
-                    SetEntityAlpha(obj, 0)
-                    SetEntityAsNoLongerNeeded(obj)
-                else
-                    if GetEntityAlpha(obj) == 0 then
-                        SetEntityAlpha(obj, 255)
-                    elseif GetEntityAlpha(obj) ~= 170 then
-                        SetEntityAlpha(obj, 170)
+                local objCoords = GetEntityCoords(obj)
+                local distance = #(playerCoords - objCoords)
+
+                if distance > 50.0 then  -- Modifica questa distanza a tuo piacimento
+                    if not IsEntityOnScreen(obj) then
+                        SetEntityAlpha(obj, 0)
+                        SetEntityAsNoLongerNeeded(obj)
+                    else
+                        if GetEntityAlpha(obj) == 0 then
+                            SetEntityAlpha(obj, 255)
+                        elseif GetEntityAlpha(obj) ~= 170 then
+                            SetEntityAlpha(obj, 170)
+                        end
                     end
                 end
                 Citizen.Wait(1)
@@ -140,7 +174,7 @@ Citizen.CreateThread(function()
 
             DisableOcclusionThisFrame()
             SetDisableDecalRenderingThisFrame()
-            RemoveParticleFxInRange(GetEntityCoords(PlayerPedId()), 10.0)
+            RemoveParticleFxInRange(playerCoords, 10.0)
             OverrideLodscaleThisFrame(0.4)
             SetArtificialLightsState(true)
         end
