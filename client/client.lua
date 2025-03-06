@@ -5,7 +5,8 @@ local function applyFPSBoost(level)
     if level == "ultra_low" then
         SetTimecycleModifier("yell_tunnel_nodirect") -- Rimuove effetti visivi complessi
         SetTimecycleModifierStrength(1.0)
-        SetArtificialLightsState(true) -- Disabilita alcune luci dinamiche
+        SetArtificialLightsState(false) -- Mantiene le luci normali attive
+        SetLightsCutoffDistanceTweak(5.0) -- Mantiene la luce nei primi 5 metri
         SetFlashLightKeepOnWhileMoving(false)
         SetReducePedModelBudget(true)
         SetReduceVehicleModelBudget(true)
@@ -164,8 +165,9 @@ Citizen.CreateThread(function()
                 local distance = #(playerCoords - objCoords)
 
                 if distance > 100.0 then
-                    SetEntityAlpha(obj, 255) -- Assicura che l'oggetto sia visibile
-                    SetEntityRenderScorched(obj, true) -- Applica una texture bruciata/nera
+                    SetEntityAlpha(obj, 0) -- Rende l'oggetto completamente invisibile
+                    SetEntityAsNoLongerNeeded(obj)
+                    SetModelAsNoLongerNeeded(GetEntityModel(obj))
                 elseif distance > 50.0 then  -- Modifica questa distanza a tuo piacimento
                     if not IsEntityOnScreen(obj) then
                         SetEntityAlpha(obj, 0)
