@@ -1,216 +1,261 @@
--- // FPS Booster for FiveM
+local ox_lib = exports.ox_lib
 
-ESX = exports["es_extended"]:getSharedObject()
+-- Funzione per applicare il boost FPS
+local function applyFPSBoost(level)
+    if level == "low" then
+        -- Impostazioni per il massimo boost (FPS molto alti)
+        SetTimecycleModifier("yell_tunnel_nodirect") -- Rimuove effetti visivi complessi
+        SetTimecycleModifierStrength(1.0)
+        SetArtificialLightsState(true) -- Disabilita luci dinamiche
+        SetFlashLightKeepOnWhileMoving(false) -- Disabilita effetti luce dinamici
+        SetLightsCutoffDistanceTweak(1.0) -- Riduce la distanza delle luci
+        SetPedAoBlobRendering(false) -- Disabilita effetti di ombreggiatura sui ped
+        SetDisableDecalRendering(true) -- Disabilita decalcomanie (es. sangue, proiettili)
+        SetReducePedModelBudget(true) -- Riduce il dettaglio dei ped
+        SetReduceVehicleModelBudget(true) -- Riduce il dettaglio dei veicoli
+        SetReduceWeaponModelBudget(true) -- Riduce il dettaglio delle armi
 
-TriggerEvent('chat:addSuggestion', '/fps', 'Open fps boost menu')
+        -- Mantiene gli oggetti vicini visibili
+        SetDistantCarsEnabled(false) -- Disabilita auto lontane
+        SetDistantPedsEnabled(false) -- Disabilita ped lontani
+        SetDistantDecalsEnabled(false) -- Disabilita decalcomanie lontane
+        SetDistantLandscapeEnabled(false) -- Disabilita il rendering del paesaggio lontano
+        SetDistantOceanEnabled(false) -- Disabilita il rendering dell'oceano lontano
+        SetDistantCloudsEnabled(false) -- Disabilita il rendering delle nuvole lontane
+        SetDistantFogEnabled(false) -- Disabilita la nebbia lontana
+        SetDistantAmbientPedsEnabled(false) -- Disabilita i ped ambientali lontani
+        SetDistantAmbientVehiclesEnabled(false) -- Disabilita i veicoli ambientali lontani
+        SetDistantAmbientAnimalsEnabled(false) -- Disabilita gli animali lontani
+        SetDistantAmbientObjectsEnabled(false) -- Disabilita gli oggetti lontani
+        SetDistantAmbientPickupsEnabled(false) -- Disabilita i pickup lontani
+        SetDistantAmbientProjectilesEnabled(false) -- Disabilita i proiettili lontani
+        SetDistantAmbientEffectsEnabled(false) -- Disabilita gli effetti lontani
+        SetDistantAmbientShadowsEnabled(false) -- Disabilita le ombre lontane
+        SetDistantAmbientLightsEnabled(false) -- Disabilita le luci lontane
+        SetDistantAmbientParticlesEnabled(false) -- Disabilita le particelle lontane
+        SetDistantAmbientAudioEnabled(false) -- Disabilita l'audio lontano
+        SetDistantAmbientClutterEnabled(false) -- Disabilita il disordine lontano
+        SetDistantAmbientVegetationEnabled(false) -- Disabilita la vegetazione lontana
+        SetDistantAmbientWaterEnabled(false) -- Disabilita l'acqua lontana
+        SetDistantAmbientWeatherEnabled(false) -- Disabilita gli effetti meteorologici lontani
+        SetDistantAmbientWindEnabled(false) -- Disabilita gli effetti del vento lontani
+        SetDistantAmbientFireEnabled(false) -- Disabilita gli effetti del fuoco lontani
+        SetDistantAmbientExplosionsEnabled(false) -- Disabilita gli effetti delle esplosioni lontane
+        SetDistantAmbientSmokeEnabled(false) -- Disabilita gli effetti del fumo lontani
+        SetDistantAmbientDustEnabled(false) -- Disabilita gli effetti della polvere lontani
+        SetDistantAmbientMiscEnabled(false) -- Disabilita effetti vari lontani
 
-local function EnumerateEntities(initFunc, moveFunc, disposeFunc)
-    return coroutine.wrap(function()
-        local iter, id = initFunc()
-        if not id or id == 0 then
-            disposeFunc(iter)
-            return
-        end
-        repeat
-            coroutine.yield(id)
-            local next
-            next, id = moveFunc(iter)
-        until not next
-        disposeFunc(iter)
-    end)
+        -- Imposta una distanza di rendering minima per gli oggetti vicini
+        SetRenderDistance(50.0) -- Distanza di rendering per oggetti vicini
+        SetLodScale(0.5) -- Riduce il livello di dettaglio per oggetti lontani
+    elseif level == "medium" then
+        -- Impostazioni per un boost moderato
+        SetTimecycleModifier("yell_tunnel_nodirect")
+        SetTimecycleModifierStrength(0.5)
+        SetArtificialLightsState(false)
+        SetDistantCarsEnabled(true)
+        SetDistantPedsEnabled(true)
+        SetDistantDecalsEnabled(true)
+        SetDistantLandscapeEnabled(true)
+        SetDistantOceanEnabled(true)
+        SetDistantCloudsEnabled(true)
+        SetDistantFogEnabled(true)
+
+        -- Imposta una distanza di rendering media
+        SetRenderDistance(100.0)
+        SetLodScale(1.0)
+    elseif level == "high" then
+        -- Impostazioni per un boost minimo
+        SetTimecycleModifier("")
+        SetTimecycleModifierStrength(0.0)
+        SetArtificialLightsState(false)
+        SetDistantCarsEnabled(true)
+        SetDistantPedsEnabled(true)
+        SetDistantDecalsEnabled(true)
+        SetDistantLandscapeEnabled(true)
+        SetDistantOceanEnabled(true)
+        SetDistantCloudsEnabled(true)
+        SetDistantFogEnabled(true)
+
+        -- Imposta una distanza di rendering massima
+        SetRenderDistance(200.0)
+        SetLodScale(2.0)
+    end
 end
 
--- Menu
-RegisterNetEvent('Hel1best:fpsmenu') 
-AddEventHandler('Hel1best:fpsmenu', function()
-  lib.showContext('hel1bestfpsmenu')
-end)
+-- Funzione per impostare la qualità grafica
+local function setGraphicsQuality(quality)
+    if quality == "ultra" then
+        -- Migliore qualità grafica possibile
+        SetGraphicsSetting("grassQuality", 3)
+        SetGraphicsSetting("shadowQuality", 3)
+        SetGraphicsSetting("textureQuality", 3)
+        SetGraphicsSetting("waterQuality", 3)
+        SetRenderDistance(300.0) -- Massima distanza di rendering
+        SetLodScale(3.0) -- Massimo livello di dettaglio
+    elseif quality == "high" then
+        SetGraphicsSetting("grassQuality", 2)
+        SetGraphicsSetting("shadowQuality", 2)
+        SetGraphicsSetting("textureQuality", 2)
+        SetGraphicsSetting("waterQuality", 2)
+        SetRenderDistance(200.0)
+        SetLodScale(2.0)
+    elseif quality == "medium" then
+        SetGraphicsSetting("grassQuality", 1)
+        SetGraphicsSetting("shadowQuality", 1)
+        SetGraphicsSetting("textureQuality", 1)
+        SetGraphicsSetting("waterQuality", 1)
+        SetRenderDistance(100.0)
+        SetLodScale(1.0)
+    elseif quality == "low" then
+        SetGraphicsSetting("grassQuality", 0)
+        SetGraphicsSetting("shadowQuality", 0)
+        SetGraphicsSetting("textureQuality", 0)
+        SetGraphicsSetting("waterQuality", 0)
+        SetRenderDistance(50.0)
+        SetLodScale(0.5)
+    end
+end
 
--- FPS Boost #1
-RegisterNetEvent('Hel1best:fps1') 
-AddEventHandler('Hel1best:fps1', function()
-  RopeDrawShadowEnabled(false)
-  CascadeShadowsClearShadowSampleType()
-  CascadeShadowsSetAircraftMode(false)
-  CascadeShadowsEnableEntityTracker(true)
-  CascadeShadowsSetDynamicDepthMode(false)
-  CascadeShadowsSetEntityTrackerScale(0.0)
-  CascadeShadowsSetDynamicDepthValue(0.0)
-  CascadeShadowsSetCascadeBoundsScale(0.0)
-  SetFlashLightFadeDistance(0.0)
-  SetLightsCutoffDistanceTweak(0.0)
-  DistantCopCarSirens(false)
-  SetTimecycleModifier('yell_tunnel_nodirect')
-  lib.notify({title = '',description = 'FPS Boost',type = 'success'})
-  
-  fpsBoostActive = true
-end)
+-- Funzione per resettare le impostazioni
+local function resetSettings()
+    SetTimecycleModifier("")
+    SetTimecycleModifierStrength(0.0)
+    SetArtificialLightsState(false)
+    SetGraphicsSetting("grassQuality", 2)
+    SetGraphicsSetting("shadowQuality", 2)
+    SetGraphicsSetting("textureQuality", 2)
+    SetGraphicsSetting("waterQuality", 2)
+    SetDistantCarsEnabled(true)
+    SetDistantPedsEnabled(true)
+    SetDistantDecalsEnabled(true)
+    SetDistantLandscapeEnabled(true)
+    SetDistantOceanEnabled(true)
+    SetDistantCloudsEnabled(true)
+    SetDistantFogEnabled(true)
+    SetRenderDistance(150.0) -- Distanza di rendering predefinita
+    SetLodScale(1.5) -- Livello di dettaglio predefinito
+end
 
--- Lights Mode
-RegisterNetEvent('Hel1best:fps2') 
-AddEventHandler('Hel1best:fps2', function()
-  SetTimecycleModifier('tunnel')
-  lib.notify({title = '',description = 'Lights Mode',type = 'success'})
-end)
-
--- Graphics (Migliorata)
-RegisterNetEvent('Hel1best:fps3') 
-AddEventHandler('Hel1best:fps3', function()
-  SetTimecycleModifier('MP_Powerplay_blend')
-  SetExtraTimecycleModifier('reflection_correct_ambient')
-  SetArtificialLightsState(true)
-  CascadeShadowsSetAircraftMode(true)
-  CascadeShadowsEnableEntityTracker(true)
-  CascadeShadowsSetDynamicDepthMode(true)
-  CascadeShadowsSetEntityTrackerScale(5.0)
-  CascadeShadowsSetDynamicDepthValue(5.0)
-  CascadeShadowsSetCascadeBoundsScale(5.0)
-  SetFlashLightFadeDistance(10.0)
-  SetLightsCutoffDistanceTweak(10.0)
-  DistantCopCarSirens(true)
-  OverrideLodscaleThisFrame(1.0)
-  lib.notify({title = '',description = 'Graphics migliorate attivate',type = 'success'})
-end)
-
--- Simple/Reset
-RegisterNetEvent('Hel1best:fps4') 
-AddEventHandler('Hel1best:fps4', function()
-  SetTimecycleModifier()
-  ClearTimecycleModifier()
-  ClearExtraTimecycleModifier()
-  RopeDrawShadowEnabled(true)
-  CascadeShadowsSetAircraftMode(true)
-  CascadeShadowsEnableEntityTracker(true)
-  CascadeShadowsSetDynamicDepthMode(true)
-  CascadeShadowsSetEntityTrackerScale(5.0)
-  CascadeShadowsSetDynamicDepthValue(5.0)
-  CascadeShadowsSetCascadeBoundsScale(5.0)
-  SetFlashLightFadeDistance(10.0)
-  SetLightsCutoffDistanceTweak(10.0)
-  DistantCopCarSirens(true)
-  OverrideLodscaleThisFrame(1.0)
-  lib.notify({title = '',description = 'Resettato alle impostazioni predefinite',type = 'success'})
-  
-  fpsBoostActive = false
-end)
-
+-- Registrazione del menu principale
 lib.registerContext({
-  id = 'hel1bestfpsmenu',
-  title =  'FPS Menu',
-  onExit = function()
-  end,
-  options = {
-      {
-          title = 'FPS Boost',
-          description = 'Aiuta a migliorare le prestazioni FPS',
-          icon = 'fas fa-keyboard',
-          event = 'Hel1best:fps1',
-      },
-      {
-        title = 'Lights Mode',
-        description = 'Mantiene una buona grafica e migliora le prestazioni',
-        icon = 'far fa-lightbulb',
-        event = 'Hel1best:fps2',
-    },
-    {
-      title = 'Graphics',
-      description = 'Attiva la migliore qualità grafica',
-      icon = 'far fa-newspaper',
-      event = 'Hel1best:fps3',
-  },
-      {
-          title = 'Reset',
-          description = 'Ripristina le impostazioni predefinite',
-          icon = 'fa fa-remove',
-          event = 'Hel1best:fps4',
-      },
-  },
+    id = 'fps_boost_menu',
+    title = 'FPS Boost Menu',
+    options = {
+        {
+            title = 'FPS Boost',
+            description = 'Aumenta i FPS',
+            menu = 'fps_boost_submenu',
+            icon = 'rocket',
+            arrow = true
+        },
+        {
+            title = 'Graphics',
+            description = 'Imposta la qualità grafica',
+            menu = 'graphics_submenu',
+            icon = 'image',
+            arrow = true
+        },
+        {
+            title = 'Reset',
+            description = 'Resetta tutte le impostazioni',
+            icon = 'undo',
+            onSelect = function()
+                resetSettings()
+                lib.notify({ title = 'Reset', description = 'Impostazioni ripristinate.', type = 'success' })
+            end
+        }
+    }
 })
 
--- // Distance rendering and entity handler
-Citizen.CreateThread(function()
-    while true do
-        if fpsBoostActive then
-            local playerCoords = GetEntityCoords(PlayerPedId())
-
-            for ped in EnumerateEntities(FindFirstPed, FindNextPed, EndFindPed) do
-                local pedCoords = GetEntityCoords(ped)
-                local distance = #(playerCoords - pedCoords)
-
-                if distance > 50.0 then  -- Modifica questa distanza a tuo piacimento
-                    if not IsEntityOnScreen(ped) then
-                        SetEntityAlpha(ped, 0)
-                        SetEntityAsNoLongerNeeded(ped)
-                    else
-                        if GetEntityAlpha(ped) == 0 then
-                            SetEntityAlpha(ped, 255)
-                        elseif GetEntityAlpha(ped) ~= 210 then
-                            SetEntityAlpha(ped, 210)
-                        end
-                    end
-                    SetPedAoBlobRendering(ped, false)
-                end
-                Citizen.Wait(1)
+-- Registrazione del submenu per FPS Boost
+lib.registerContext({
+    id = 'fps_boost_submenu',
+    title = 'FPS Boost Submenu',
+    menu = 'fps_boost_menu',
+    onBack = function()
+        print('Tornato al menu principale.')
+    end,
+    options = {
+        {
+            title = 'Ultra Boost',
+            description = 'Massimo boost FPS (50-60+ FPS)',
+            icon = 'tachometer-alt',
+            onSelect = function()
+                applyFPSBoost("low")
+                lib.notify({ title = 'Ultra Boost', description = 'Boost FPS applicato.', type = 'success' })
             end
-
-            for obj in EnumerateEntities(FindFirstObject, FindNextObject, EndFindObject) do
-                local objCoords = GetEntityCoords(obj)
-                local distance = #(playerCoords - objCoords)
-
-                if distance > 50.0 then  -- Modifica questa distanza a tuo piacimento
-                    if not IsEntityOnScreen(obj) then
-                        SetEntityAlpha(obj, 0)
-                        SetEntityAsNoLongerNeeded(obj)
-                    else
-                        if GetEntityAlpha(obj) == 0 then
-                            SetEntityAlpha(obj, 255)
-                        elseif GetEntityAlpha(obj) ~= 170 then
-                            SetEntityAlpha(obj, 170)
-                        end
-                    end
-                end
-                Citizen.Wait(1)
+        },
+        {
+            title = 'Medium Boost',
+            description = 'Boost moderato (30-40 FPS)',
+            icon = 'tachometer-alt',
+            onSelect = function()
+                applyFPSBoost("medium")
+                lib.notify({ title = 'Medium Boost', description = 'Boost FPS applicato.', type = 'success' })
             end
+        },
+        {
+            title = 'High Boost',
+            description = 'Boost minimo (10-20 FPS)',
+            icon = 'tachometer-alt',
+            onSelect = function()
+                applyFPSBoost("high")
+                lib.notify({ title = 'High Boost', description = 'Boost FPS applicato.', type = 'success' })
+            end
+        }
+    }
+})
 
-            DisableOcclusionThisFrame()
-            SetDisableDecalRenderingThisFrame()
-            RemoveParticleFxInRange(playerCoords, 10.0)
-            OverrideLodscaleThisFrame(0.4)
-            SetArtificialLightsState(true)
-        end
-        Citizen.Wait(8)
-    end
-end)
+-- Registrazione del submenu per Graphics
+lib.registerContext({
+    id = 'graphics_submenu',
+    title = 'Graphics Submenu',
+    menu = 'fps_boost_menu',
+    onBack = function()
+        print('Tornato al menu principale.')
+    end,
+    options = {
+        {
+            title = 'Ultra',
+            description = 'Migliore qualità grafica possibile',
+            icon = 'star',
+            onSelect = function()
+                setGraphicsQuality("ultra")
+                lib.notify({ title = 'Ultra', description = 'Qualità grafica impostata.', type = 'success' })
+            end
+        },
+        {
+            title = 'High',
+            description = 'Qualità grafica alta',
+            icon = 'star-half-alt',
+            onSelect = function()
+                setGraphicsQuality("high")
+                lib.notify({ title = 'High', description = 'Qualità grafica impostata.', type = 'success' })
+            end
+        },
+        {
+            title = 'Medium',
+            description = 'Qualità grafica media',
+            icon = 'star-half-alt',
+            onSelect = function()
+                setGraphicsQuality("medium")
+                lib.notify({ title = 'Medium', description = 'Qualità grafica impostata.', type = 'success' })
+            end
+        },
+        {
+            title = 'Low',
+            description = 'Qualità grafica bassa',
+            icon = 'star-half-alt',
+            onSelect = function()
+                setGraphicsQuality("low")
+                lib.notify({ title = 'Low', description = 'Qualità grafica impostata.', type = 'success' })
+            end
+        }
+    }
+})
 
-Citizen.CreateThread(function()
-    while true do
-        if fpsBoostActive then
-            ClearAllBrokenGlass()
-            ClearAllHelpMessages()
-            LeaderboardsReadClearAll()
-            ClearBrief()
-            ClearGpsFlags()
-            ClearPrints()
-            ClearSmallPrints()
-            ClearReplayStats()
-            LeaderboardsClearCacheData()
-            ClearFocus()
-            ClearHdArea()
-            ClearPedBloodDamage(PlayerPedId())
-            ClearPedWetness(PlayerPedId())
-            ClearPedEnvDirt(PlayerPedId())
-            ResetPedVisibleDamage(PlayerPedId())
-            ClearExtraTimecycleModifier()
-            ClearTimecycleModifier()
-            ClearOverrideWeather()
-            ClearHdArea()
-            DisableVehicleDistantlights(false)
-            DisableScreenblurFade()
-            SetRainLevel(0.0)
-            SetWindSpeed(0.0)
-            Citizen.Wait(300)
-        else
-            Citizen.Wait(1500)
-        end
-    end
-end)
+-- Comando per aprire il menu
+RegisterCommand('fpsboost', function()
+    lib.showContext('fps_boost_menu')
+end, false)
