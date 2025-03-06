@@ -2,7 +2,7 @@ fx_version "cerulean"
 game "gta5"
 lua54 'yes'
 
-author "Hel1bestík#0610 & rework by @.vincyxir"
+author "FPSBoost-MENU"
 description "menu for boosting fps"
 version "1.0.0"
 
