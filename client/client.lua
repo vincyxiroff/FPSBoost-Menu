@@ -51,6 +51,7 @@ local function resetSettings()
     SetArtificialLightsState(false)
     SetParticleFxNonLoopedAlpha(1.0)
     SetLodScale(1.5)
+    fpsBoostActive = false
 end
 
 local function EnumerateEntities(initFunc, moveFunc, disposeFunc)
@@ -139,7 +140,10 @@ Citizen.CreateThread(function()
                 local pedCoords = GetEntityCoords(ped)
                 local distance = #(playerCoords - pedCoords)
 
-                if distance > 50.0 then  -- Modifica questa distanza a tuo piacimento
+                if distance > 100.0 then
+                    SetEntityAlpha(obj, 255) -- Assicura che l'oggetto sia visibile
+                    SetEntityRenderScorched(obj, true) -- Applica una texture bruciata/nera
+                elseif distance > 50.0 then  -- Modifica questa distanza a tuo piacimento
                     if not IsEntityOnScreen(ped) then
                         SetEntityAlpha(ped, 0)
                         SetEntityAsNoLongerNeeded(ped)
@@ -159,10 +163,14 @@ Citizen.CreateThread(function()
                 local objCoords = GetEntityCoords(obj)
                 local distance = #(playerCoords - objCoords)
 
-                if distance > 50.0 then  -- Modifica questa distanza a tuo piacimento
+                if distance > 100.0 then
+                    SetEntityAlpha(obj, 255) -- Assicura che l'oggetto sia visibile
+                    SetEntityRenderScorched(obj, true) -- Applica una texture bruciata/nera
+                elseif distance > 50.0 then  -- Modifica questa distanza a tuo piacimento
                     if not IsEntityOnScreen(obj) then
                         SetEntityAlpha(obj, 0)
                         SetEntityAsNoLongerNeeded(obj)
+                        SetModelAsNoLongerNeeded(GetEntityModel(obj))
                     else
                         if GetEntityAlpha(obj) == 0 then
                             SetEntityAlpha(obj, 255)
@@ -177,8 +185,15 @@ Citizen.CreateThread(function()
             DisableOcclusionThisFrame()
             SetDisableDecalRenderingThisFrame()
             RemoveParticleFxInRange(playerCoords, 10.0)
-            OverrideLodscaleThisFrame(0.4)
+            OverrideLodscaleThisFrame(0.1) -- Riduce drasticamente il dettaglio degli oggetti lontani
+            SetStreamedTextureDictAsNoLongerNeeded("all") -- Rilascia texture non necessarie
             SetArtificialLightsState(true)
+
+            -- Disabilita texture avanzate e dettagli lontani
+            SetReduceVehicleModelBudget(true)
+            SetReducePedModelBudget(true)
+            SetFlashLightFadeDistance(0.0) -- Evita effetti di luce su texture distanti
+            SetLightsCutoffDistanceTweak(0.0) -- Evita illuminazione su oggetti lontani
         end
         Citizen.Wait(8)
     end
