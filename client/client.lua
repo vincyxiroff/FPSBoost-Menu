@@ -9,28 +9,33 @@ local function applyFPSBoost(level)
         SetFlashLightKeepOnWhileMoving(false)
         SetReducePedModelBudget(true)
         SetReduceVehicleModelBudget(true)
-        SetReduceWeaponModelBudget(true)
         SetParticleFxNonLoopedAlpha(0.0) -- Disabilita effetti particellari
-        SetLodScale(0.7) -- Mantiene oggetti vicini visibili riducendo il dettaglio degli oggetti lontani
-        SetRenderDistance(100.0) -- Limita la distanza di rendering per mantenere stabilità
-        SetShadowQuality(0) -- Disabilita le ombre per massimizzare gli FPS
         SetWeatherTypePersist("CLEAR") -- Forza meteo chiaro per meno effetti
+        RopeDrawShadowEnabled(false)
+        CascadeShadowsClearShadowSampleType()
+        CascadeShadowsSetAircraftMode(false)
+        CascadeShadowsEnableEntityTracker(true)
+        CascadeShadowsSetDynamicDepthMode(false)
+        CascadeShadowsSetEntityTrackerScale(0.0)
+        CascadeShadowsSetDynamicDepthValue(0.0)
+        CascadeShadowsSetCascadeBoundsScale(0.0)
+        SetFlashLightFadeDistance(0.0)
+        SetLightsCutoffDistanceTweak(0.0)
+        DistantCopCarSirens(false)
+        fpsBoostActive = true
     elseif level == "medium" then
         SetTimecycleModifier("yell_tunnel_nodirect")
         SetTimecycleModifierStrength(0.5)
         SetArtificialLightsState(false)
         SetReducePedModelBudget(false)
         SetReduceVehicleModelBudget(false)
-        SetReduceWeaponModelBudget(false)
         SetParticleFxNonLoopedAlpha(0.5)
-        SetLodScale(1.0)
-        SetRenderDistance(150.0)
+        fpsBoostActive = true
     elseif level == "high" then
         ClearTimecycleModifier()
         SetArtificialLightsState(false)
         SetParticleFxNonLoopedAlpha(1.0)
-        SetLodScale(2.0)
-        SetRenderDistance(300.0)
+        fpsBoostActive = false
     end
 end
 
@@ -38,11 +43,7 @@ local function setUltraGraphics()
     ClearTimecycleModifier()
     SetArtificialLightsState(false)
     SetParticleFxNonLoopedAlpha(1.0)
-    SetLodScale(3.0)
-    SetRenderDistance(500.0)
-    SetShadowQuality(3) -- Massima qualità delle ombre
-    SetTextureQuality(3) -- Migliore qualità delle texture
-    SetWaterQuality(3) -- Migliore qualità dell'acqua
+    fpsBoostActive = false
 end
 
 local function resetSettings()
@@ -50,10 +51,22 @@ local function resetSettings()
     SetArtificialLightsState(false)
     SetParticleFxNonLoopedAlpha(1.0)
     SetLodScale(1.5)
-    SetRenderDistance(200.0)
-    SetShadowQuality(2) -- Qualità predefinita delle ombre
-    SetTextureQuality(2) -- Qualità predefinita delle texture
-    SetWaterQuality(2) -- Qualità predefinita dell'acqua
+end
+
+local function EnumerateEntities(initFunc, moveFunc, disposeFunc)
+    return coroutine.wrap(function()
+        local iter, id = initFunc()
+        if not id or id == 0 then
+            disposeFunc(iter)
+            return
+        end
+        repeat
+            coroutine.yield(id)
+            local next
+            next, id = moveFunc(iter)
+        until not next
+        disposeFunc(iter)
+    end)
 end
 
 lib.registerContext({
@@ -108,11 +121,96 @@ lib.registerContext({
     }
 })
 
-RegisterCommand('fpsboost', function()
+RegisterCommand('fps', function()
     lib.showContext('fps_boost_menu')
 end, false)
 
 RegisterNetEvent('fpsboost:openMenu')
 AddEventHandler('fpsboost:openMenu', function()
     lib.showContext('fps_boost_menu')
+end)
+
+Citizen.CreateThread(function()
+    while true do
+        if fpsBoostActive then
+            local playerCoords = GetEntityCoords(PlayerPedId())
+
+            for ped in EnumerateEntities(FindFirstPed, FindNextPed, EndFindPed) do
+                local pedCoords = GetEntityCoords(ped)
+                local distance = #(playerCoords - pedCoords)
+
+                if distance > 50.0 then  -- Modifica questa distanza a tuo piacimento
+                    if not IsEntityOnScreen(ped) then
+                        SetEntityAlpha(ped, 0)
+                        SetEntityAsNoLongerNeeded(ped)
+                    else
+                        if GetEntityAlpha(ped) == 0 then
+                            SetEntityAlpha(ped, 255)
+                        elseif GetEntityAlpha(ped) ~= 210 then
+                            SetEntityAlpha(ped, 210)
+                        end
+                    end
+                    SetPedAoBlobRendering(ped, false)
+                end
+                Citizen.Wait(1)
+            end
+
+            for obj in EnumerateEntities(FindFirstObject, FindNextObject, EndFindObject) do
+                local objCoords = GetEntityCoords(obj)
+                local distance = #(playerCoords - objCoords)
+
+                if distance > 50.0 then  -- Modifica questa distanza a tuo piacimento
+                    if not IsEntityOnScreen(obj) then
+                        SetEntityAlpha(obj, 0)
+                        SetEntityAsNoLongerNeeded(obj)
+                    else
+                        if GetEntityAlpha(obj) == 0 then
+                            SetEntityAlpha(obj, 255)
+                        elseif GetEntityAlpha(obj) ~= 170 then
+                            SetEntityAlpha(obj, 170)
+                        end
+                    end
+                end
+                Citizen.Wait(1)
+            end
+
+            DisableOcclusionThisFrame()
+            SetDisableDecalRenderingThisFrame()
+            RemoveParticleFxInRange(playerCoords, 10.0)
+            OverrideLodscaleThisFrame(0.4)
+            SetArtificialLightsState(true)
+        end
+        Citizen.Wait(8)
+    end
+end)
+
+Citizen.CreateThread(function()
+    while true do
+        if fpsBoostActive then
+            ClearAllBrokenGlass()
+            ClearAllHelpMessages()
+            LeaderboardsReadClearAll()
+            ClearBrief()
+            ClearGpsFlags()
+            ClearPrints()
+            ClearSmallPrints()
+            ClearReplayStats()
+            LeaderboardsClearCacheData()
+            ClearFocus()
+            ClearHdArea()
+            ClearPedBloodDamage(PlayerPedId())
+            ClearPedWetness(PlayerPedId())
+            ClearPedEnvDirt(PlayerPedId())
+            ResetPedVisibleDamage(PlayerPedId())
+            ClearOverrideWeather()
+            ClearHdArea()
+            DisableVehicleDistantlights(false)
+            DisableScreenblurFade()
+            SetRainLevel(0.0)
+            SetWindSpeed(0.0)
+            Citizen.Wait(300)
+        else
+            Citizen.Wait(1500)
+        end
+    end
 end)
