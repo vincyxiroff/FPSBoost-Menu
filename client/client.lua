@@ -3,15 +3,15 @@ local ox_lib = exports.ox_lib
 
 local function applyFPSBoost(level)
     if level == "ultra_low" then
-        SetTimecycleModifier("yell_tunnel_nodirect") -- Rimuove effetti visivi complessi
+        SetTimecycleModifier("yell_tunnel_nodirect")
         SetTimecycleModifierStrength(1.0)
-        SetArtificialLightsState(false) -- Mantiene le luci normali attive
-        SetLightsCutoffDistanceTweak(5.0) -- Mantiene la luce nei primi 5 metri
+        SetArtificialLightsState(false)
+        SetLightsCutoffDistanceTweak(5.0)
         SetFlashLightKeepOnWhileMoving(false)
         SetReducePedModelBudget(true)
         SetReduceVehicleModelBudget(true)
-        SetParticleFxNonLoopedAlpha(0.0) -- Disabilita effetti particellari
-        SetWeatherTypePersist("CLEAR") -- Forza meteo chiaro per meno effetti
+        SetParticleFxNonLoopedAlpha(0.0)
+        SetWeatherTypePersist("CLEAR")
         RopeDrawShadowEnabled(false)
         CascadeShadowsClearShadowSampleType()
         CascadeShadowsSetAircraftMode(false)
@@ -75,51 +75,11 @@ lib.registerContext({
     id = 'fps_boost_menu',
     title = 'FPS Boost Menu',
     options = {
-        {
-            title = 'Ultra Low Boost',
-            description = 'Massimo boost FPS (50-60+ FPS)',
-            icon = 'rocket',
-            onSelect = function()
-                applyFPSBoost("ultra_low")
-                lib.notify({ title = 'Ultra Low Boost', description = 'Boost FPS applicato.', type = 'success' })
-            end
-        },
-        {
-            title = 'Medium Boost',
-            description = 'Boost moderato (30-40 FPS)',
-            icon = 'tachometer-alt',
-            onSelect = function()
-                applyFPSBoost("medium")
-                lib.notify({ title = 'Medium Boost', description = 'Boost FPS applicato.', type = 'success' })
-            end
-        },
-        {
-            title = 'High Boost',
-            description = 'Boost minimo (10-20 FPS)',
-            icon = 'tachometer-alt',
-            onSelect = function()
-                applyFPSBoost("high")
-                lib.notify({ title = 'High Boost', description = 'Boost FPS applicato.', type = 'success' })
-            end
-        },
-        {
-            title = 'Graphics',
-            description = 'Migliore qualità grafica possibile',
-            icon = 'star',
-            onSelect = function()
-                setUltraGraphics()
-                lib.notify({ title = 'Graphics', description = 'Qualità grafica impostata al massimo.', type = 'success' })
-            end
-        },
-        {
-            title = 'Reset',
-            description = 'Resetta tutte le impostazioni',
-            icon = 'undo',
-            onSelect = function()
-                resetSettings()
-                lib.notify({ title = 'Reset', description = 'Impostazioni ripristinate.', type = 'success' })
-            end
-        }
+        { title = 'Ultra Low Boost', description = 'Massimo boost FPS', icon = 'rocket', onSelect = function() applyFPSBoost("ultra_low") lib.notify({ title = 'Ultra Low Boost', description = 'Boost FPS applicato.', type = 'success' }) end },
+        { title = 'Medium Boost', description = 'Boost moderato', icon = 'tachometer-alt', onSelect = function() applyFPSBoost("medium") lib.notify({ title = 'Medium Boost', description = 'Boost FPS applicato.', type = 'success' }) end },
+        { title = 'High Boost', description = 'Boost minimo', icon = 'tachometer-alt', onSelect = function() applyFPSBoost("high") lib.notify({ title = 'High Boost', description = 'Boost FPS applicato.', type = 'success' }) end },
+        { title = 'Graphics', description = 'Migliore qualità grafica possibile', icon = 'star', onSelect = function() setUltraGraphics() lib.notify({ title = 'Graphics', description = 'Qualità grafica impostata al massimo.', type = 'success' }) end },
+        { title = 'Reset', description = 'Resetta tutte le impostazioni', icon = 'undo', onSelect = function() resetSettings() lib.notify({ title = 'Reset', description = 'Impostazioni ripristinate.', type = 'success' }) end }
     }
 })
 
@@ -136,66 +96,47 @@ Citizen.CreateThread(function()
     while true do
         if fpsBoostActive then
             local playerCoords = GetEntityCoords(PlayerPedId())
-
             for ped in EnumerateEntities(FindFirstPed, FindNextPed, EndFindPed) do
                 local pedCoords = GetEntityCoords(ped)
                 local distance = #(playerCoords - pedCoords)
-
                 if distance > 100.0 then
-                    SetEntityAlpha(obj, 255) -- Assicura che l'oggetto sia visibile
-                    SetEntityRenderScorched(obj, true) -- Applica una texture bruciata/nera
-                elseif distance > 50.0 then  -- Modifica questa distanza a tuo piacimento
+                    SetEntityAlpha(ped, 0)
+                    SetEntityAsNoLongerNeeded(ped)
+                elseif distance > 50.0 then
                     if not IsEntityOnScreen(ped) then
                         SetEntityAlpha(ped, 0)
                         SetEntityAsNoLongerNeeded(ped)
                     else
-                        if GetEntityAlpha(ped) == 0 then
-                            SetEntityAlpha(ped, 255)
-                        elseif GetEntityAlpha(ped) ~= 210 then
-                            SetEntityAlpha(ped, 210)
-                        end
+                        SetEntityAlpha(ped, 210)
                     end
                     SetPedAoBlobRendering(ped, false)
                 end
                 Citizen.Wait(1)
             end
-
             for obj in EnumerateEntities(FindFirstObject, FindNextObject, EndFindObject) do
                 local objCoords = GetEntityCoords(obj)
                 local distance = #(playerCoords - objCoords)
-
                 if distance > 100.0 then
-                    SetEntityAlpha(obj, 0) -- Rende l'oggetto completamente invisibile
+                    SetEntityAlpha(obj, 0)
                     SetEntityAsNoLongerNeeded(obj)
                     SetModelAsNoLongerNeeded(GetEntityModel(obj))
-                elseif distance > 50.0 then  -- Modifica questa distanza a tuo piacimento
+                elseif distance > 50.0 then
                     if not IsEntityOnScreen(obj) then
                         SetEntityAlpha(obj, 0)
                         SetEntityAsNoLongerNeeded(obj)
                         SetModelAsNoLongerNeeded(GetEntityModel(obj))
                     else
-                        if GetEntityAlpha(obj) == 0 then
-                            SetEntityAlpha(obj, 255)
-                        elseif GetEntityAlpha(obj) ~= 170 then
-                            SetEntityAlpha(obj, 170)
-                        end
+                        SetEntityAlpha(obj, 170)
                     end
                 end
                 Citizen.Wait(1)
             end
-
             DisableOcclusionThisFrame()
             SetDisableDecalRenderingThisFrame()
             RemoveParticleFxInRange(playerCoords, 10.0)
-            OverrideLodscaleThisFrame(0.1) -- Riduce drasticamente il dettaglio degli oggetti lontani
-            SetStreamedTextureDictAsNoLongerNeeded("all") -- Rilascia texture non necessarie
+            OverrideLodscaleThisFrame(0.1)
+            SetStreamedTextureDictAsNoLongerNeeded("all")
             SetArtificialLightsState(true)
-
-            -- Disabilita texture avanzate e dettagli lontani
-            SetReduceVehicleModelBudget(true)
-            SetReducePedModelBudget(true)
-            SetFlashLightFadeDistance(0.0) -- Evita effetti di luce su texture distanti
-            SetLightsCutoffDistanceTweak(0.0) -- Evita illuminazione su oggetti lontani
         end
         Citizen.Wait(8)
     end
