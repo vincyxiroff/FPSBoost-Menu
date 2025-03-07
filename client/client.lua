@@ -23,6 +23,15 @@ local function applyFPSBoost(level)
         SetFlashLightFadeDistance(0.0)
         SetLightsCutoffDistanceTweak(0.0)
         DistantCopCarSirens(false)
+        -- testing
+        SetFarClip(300.0)
+        SetShadowRendering(false)
+        SetTextureQuality(0)
+        SetPostProcessing(false)
+        SetHighResolutionShadows(false)
+        SetExtendedDistanceScaling(false)
+        SetVehicleDistantLights(false)
+        -- 
         fpsBoostActive = true
     elseif level == "medium" then
         SetTimecycleModifier("yell_tunnel_nodirect")
@@ -44,8 +53,19 @@ local function setUltraGraphics()
     ClearTimecycleModifier()
     SetArtificialLightsState(false)
     SetParticleFxNonLoopedAlpha(1.0)
+    -- testing
+    OverrideLodscaleThisFrame(2.0) 
+    SetFlashLightFadeDistance(100.0) 
+    SetLightsCutoffDistanceTweak(100.0) 
+    CascadeShadowsSetCascadeBoundsScale(1.5) 
+    CascadeShadowsSetDynamicDepthValue(1.0) 
+    CascadeShadowsSetEntityTrackerScale(1.0)
+    DistantCopCarSirens(true) 
+    RopeDrawShadowEnabled(true)
+    --
     fpsBoostActive = false
 end
+
 
 local function resetSettings()
     ClearTimecycleModifier()
@@ -75,11 +95,11 @@ lib.registerContext({
     id = 'fps_boost_menu',
     title = 'FPS Boost Menu',
     options = {
-        { title = 'Ultra Low Boost', description = 'Massimo boost FPS', icon = 'rocket', onSelect = function() applyFPSBoost("ultra_low") lib.notify({ title = 'Ultra Low Boost', description = 'Boost FPS applicato.', type = 'success' }) end },
-        { title = 'Medium Boost', description = 'Boost moderato', icon = 'tachometer-alt', onSelect = function() applyFPSBoost("medium") lib.notify({ title = 'Medium Boost', description = 'Boost FPS applicato.', type = 'success' }) end },
-        { title = 'High Boost', description = 'Boost minimo', icon = 'tachometer-alt', onSelect = function() applyFPSBoost("high") lib.notify({ title = 'High Boost', description = 'Boost FPS applicato.', type = 'success' }) end },
-        { title = 'Graphics', description = 'Migliore qualità grafica possibile', icon = 'star', onSelect = function() setUltraGraphics() lib.notify({ title = 'Graphics', description = 'Qualità grafica impostata al massimo.', type = 'success' }) end },
-        { title = 'Reset', description = 'Resetta tutte le impostazioni', icon = 'undo', onSelect = function() resetSettings() lib.notify({ title = 'Reset', description = 'Impostazioni ripristinate.', type = 'success' }) end }
+        { title = 'Ultra Low Boost', description = 'Max FPS Boost', icon = 'rocket', onSelect = function() applyFPSBoost("ultra_low") lib.notify({ title = 'Ultra Low Boost', description = 'Boost FPS applicato.', type = 'success' }) end },
+        { title = 'Medium Boost', description = 'Medium Boost', icon = 'tachometer-alt', onSelect = function() applyFPSBoost("medium") lib.notify({ title = 'Medium Boost', description = 'Boost FPS applicato.', type = 'success' }) end },
+        { title = 'High Boost', description = 'Low Boost', icon = 'tachometer-alt', onSelect = function() applyFPSBoost("high") lib.notify({ title = 'High Boost', description = 'Boost FPS applicato.', type = 'success' }) end },
+        { title = 'Graphics', description = 'Best Graphics', icon = 'star', onSelect = function() setUltraGraphics() lib.notify({ title = 'Graphics', description = 'Qualità grafica impostata al massimo.', type = 'success' }) end },
+        { title = 'Reset', description = 'Reset', icon = 'undo', onSelect = function() resetSettings() lib.notify({ title = 'Reset', description = 'Impostazioni ripristinate.', type = 'success' }) end }
     }
 })
 
