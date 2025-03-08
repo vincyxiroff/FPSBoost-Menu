@@ -53,16 +53,16 @@ local function setUltraGraphics()
     ClearTimecycleModifier()
     SetArtificialLightsState(false)
     SetParticleFxNonLoopedAlpha(1.0)
-    -- testing
-    OverrideLodscaleThisFrame(2.0) 
-    SetFlashLightFadeDistance(100.0) 
-    SetLightsCutoffDistanceTweak(100.0) 
-    CascadeShadowsSetCascadeBoundsScale(1.5) 
-    CascadeShadowsSetDynamicDepthValue(1.0) 
-    CascadeShadowsSetEntityTrackerScale(1.0)
-    DistantCopCarSirens(true) 
-    RopeDrawShadowEnabled(true)
-    --
+    if Config.FeatureExperimental then
+        OverrideLodscaleThisFrame(2.0) 
+        SetFlashLightFadeDistance(100.0) 
+        SetLightsCutoffDistanceTweak(100.0) 
+        CascadeShadowsSetCascadeBoundsScale(1.5) 
+        CascadeShadowsSetDynamicDepthValue(1.0) 
+        CascadeShadowsSetEntityTrackerScale(1.0)
+        DistantCopCarSirens(true) 
+        RopeDrawShadowEnabled(true)
+    end
     fpsBoostActive = false
 end
 
