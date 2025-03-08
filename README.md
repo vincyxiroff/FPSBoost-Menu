@@ -22,3 +22,13 @@ This script provides a simple **FPS Boost menu** for FiveM, allowing players to 
 2. **Ensure Dependencies**:
    - `ox_lib` (Required) → [Download Here](https://github.com/overextended/ox_lib)
 3. **Add to `server.cfg`**:
+`ensure Fpsboost-Menu`
+4. **Start FiveM and use `/fps` to open the menu.**
+
+## Commands
+- `/fps` → Opens the FPS Boost Menu
+- `fpsboost:openMenu` (Event) → Opens the menu programmatically
+
+## Dependencies
+- [ox_lib](https://github.com/overextended/ox_lib)
+
