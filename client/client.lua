@@ -23,15 +23,15 @@ local function applyFPSBoost(level)
         SetFlashLightFadeDistance(0.0)
         SetLightsCutoffDistanceTweak(0.0)
         DistantCopCarSirens(false)
-        -- testing
-        SetFarClip(300.0)
-        SetShadowRendering(false)
-        SetTextureQuality(0)
-        SetPostProcessing(false)
-        SetHighResolutionShadows(false)
-        SetExtendedDistanceScaling(false)
-        SetVehicleDistantLights(false)
-        -- 
+        if Config.FeatureExperimental then
+            SetFarClip(300.0)
+            SetShadowRendering(false)
+            SetTextureQuality(0)
+            SetPostProcessing(false)
+            SetHighResolutionShadows(false)
+            SetExtendedDistanceScaling(false)
+           SetVehicleDistantLights(false)
+        end
         fpsBoostActive = true
     elseif level == "medium" then
         SetTimecycleModifier("yell_tunnel_nodirect")
