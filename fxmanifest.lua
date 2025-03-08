@@ -1,9 +1,9 @@
 fx_version "cerulean"
 game "gta5"
 
-author "FPSBoost-MENU"
+author ".vincyxir"
 description "menu for boosting fps"
-version "1.0.0"
+version "1.0.1"
 
 shared_scripts {
         '@ox_lib/init.lua',
