@@ -3,6 +3,9 @@ local ox_lib = exports.ox_lib
 
 local function applyFPSBoost(level)
     if level == "ultra_low" then
+        if config.fpstimecycle_test then
+            SetTimecycleModifier('HicksbarNEW')
+        end
         SetTimecycleModifier("yell_tunnel_nodirect")
         SetTimecycleModifierStrength(1.0)
         SetArtificialLightsState(false)
@@ -40,12 +43,14 @@ local function applyFPSBoost(level)
         SetReducePedModelBudget(false)
         SetReduceVehicleModelBudget(false)
         SetParticleFxNonLoopedAlpha(0.5)
-        fpsBoostActive = true
+        fpsBoostActive = false
+        fpsBoostnopedandobj = true
     elseif level == "high" then
         ClearTimecycleModifier()
         SetArtificialLightsState(false)
         SetParticleFxNonLoopedAlpha(1.0)
         fpsBoostActive = false
+        fpsBoostnopedandobj = false
     end
 end
 
@@ -62,8 +67,11 @@ local function setUltraGraphics()
         CascadeShadowsSetEntityTrackerScale(1.0)
         DistantCopCarSirens(true) 
         RopeDrawShadowEnabled(true)
+        SetTimecycleModifier('v_torture')
+        SetExtraTimecycleModifier('reflection_correct_ambient')
     end
     fpsBoostActive = false
+    fpsBoostnopedandobj = false
 end
 
 
@@ -71,8 +79,8 @@ local function resetSettings()
     ClearTimecycleModifier()
     SetArtificialLightsState(false)
     SetParticleFxNonLoopedAlpha(1.0)
-    SetLodScale(1.5)
     fpsBoostActive = false
+    fpsBoostnopedandobj = false
 end
 
 local function EnumerateEntities(initFunc, moveFunc, disposeFunc)
@@ -114,49 +122,51 @@ end)
 
 Citizen.CreateThread(function()
     while true do
-        if fpsBoostActive then
-            local playerCoords = GetEntityCoords(PlayerPedId())
-            for ped in EnumerateEntities(FindFirstPed, FindNextPed, EndFindPed) do
-                local pedCoords = GetEntityCoords(ped)
-                local distance = #(playerCoords - pedCoords)
-                if distance > 100.0 then
-                    SetEntityAlpha(ped, 0)
-                    SetEntityAsNoLongerNeeded(ped)
-                elseif distance > 50.0 then
-                    if not IsEntityOnScreen(ped) then
+        if config.clearpedandobj then
+            if fpsBoostActive then
+                local playerCoords = GetEntityCoords(PlayerPedId())
+                for ped in EnumerateEntities(FindFirstPed, FindNextPed, EndFindPed) do
+                    local pedCoords = GetEntityCoords(ped)
+                    local distance = #(playerCoords - pedCoords)
+                    if distance > 100.0 then
                         SetEntityAlpha(ped, 0)
                         SetEntityAsNoLongerNeeded(ped)
-                    else
-                        SetEntityAlpha(ped, 210)
+                    elseif distance > 50.0 then
+                        if not IsEntityOnScreen(ped) then
+                            SetEntityAlpha(ped, 0)
+                            SetEntityAsNoLongerNeeded(ped)
+                        else
+                            SetEntityAlpha(ped, 210)
+                        end
+                        SetPedAoBlobRendering(ped, false)
                     end
-                    SetPedAoBlobRendering(ped, false)
+                    Citizen.Wait(1)
                 end
-                Citizen.Wait(1)
-            end
-            for obj in EnumerateEntities(FindFirstObject, FindNextObject, EndFindObject) do
-                local objCoords = GetEntityCoords(obj)
-                local distance = #(playerCoords - objCoords)
-                if distance > 100.0 then
-                    SetEntityAlpha(obj, 0)
-                    SetEntityAsNoLongerNeeded(obj)
-                    SetModelAsNoLongerNeeded(GetEntityModel(obj))
-                elseif distance > 50.0 then
-                    if not IsEntityOnScreen(obj) then
+                for obj in EnumerateEntities(FindFirstObject, FindNextObject, EndFindObject) do
+                    local objCoords = GetEntityCoords(obj)
+                    local distance = #(playerCoords - objCoords)
+                    if distance > 100.0 then
                         SetEntityAlpha(obj, 0)
                         SetEntityAsNoLongerNeeded(obj)
                         SetModelAsNoLongerNeeded(GetEntityModel(obj))
-                    else
-                        SetEntityAlpha(obj, 170)
+                    elseif distance > 50.0 then
+                        if not IsEntityOnScreen(obj) then
+                            SetEntityAlpha(obj, 0)
+                            SetEntityAsNoLongerNeeded(obj)
+                            SetModelAsNoLongerNeeded(GetEntityModel(obj))
+                        else
+                            SetEntityAlpha(obj, 170)
+                        end
                     end
+                    Citizen.Wait(1)
                 end
-                Citizen.Wait(1)
+                DisableOcclusionThisFrame()
+                SetDisableDecalRenderingThisFrame()
+                RemoveParticleFxInRange(playerCoords, 10.0)
+                OverrideLodscaleThisFrame(0.1)
+                SetStreamedTextureDictAsNoLongerNeeded("all")
+                SetArtificialLightsState(true)
             end
-            DisableOcclusionThisFrame()
-            SetDisableDecalRenderingThisFrame()
-            RemoveParticleFxInRange(playerCoords, 10.0)
-            OverrideLodscaleThisFrame(0.1)
-            SetStreamedTextureDictAsNoLongerNeeded("all")
-            SetArtificialLightsState(true)
         end
         Citizen.Wait(8)
     end
@@ -165,6 +175,7 @@ end)
 Citizen.CreateThread(function()
     while true do
         if fpsBoostActive then
+            local ped = PlayerPedId()
             ClearAllBrokenGlass()
             ClearAllHelpMessages()
             LeaderboardsReadClearAll()
@@ -176,12 +187,11 @@ Citizen.CreateThread(function()
             LeaderboardsClearCacheData()
             ClearFocus()
             ClearHdArea()
-            ClearPedBloodDamage(PlayerPedId())
-            ClearPedWetness(PlayerPedId())
-            ClearPedEnvDirt(PlayerPedId())
-            ResetPedVisibleDamage(PlayerPedId())
+            ClearPedBloodDamage(ped)
+            ClearPedWetness(ped)
+            ClearPedEnvDirt(ped)
+            ResetPedVisibleDamage(ped)
             ClearOverrideWeather()
-            ClearHdArea()
             DisableVehicleDistantlights(false)
             DisableScreenblurFade()
             SetRainLevel(0.0)
@@ -192,3 +202,35 @@ Citizen.CreateThread(function()
         end
     end
 end)
+
+Citizen.CreateThread(function()
+    while true do
+        if fpsBoostnopedandobj then
+            local ped = PlayerPedId()
+            ClearAllBrokenGlass()
+            ClearAllHelpMessages()
+            LeaderboardsReadClearAll()
+            ClearBrief()
+            ClearGpsFlags()
+            ClearPrints()
+            ClearSmallPrints()
+            ClearReplayStats()
+            LeaderboardsClearCacheData()
+            ClearFocus()
+            ClearHdArea()
+            ClearPedBloodDamage(ped)
+            ClearPedWetness(ped)
+            ClearPedEnvDirt(ped)
+            ResetPedVisibleDamage(ped)
+            ClearOverrideWeather()
+            DisableVehicleDistantlights(false)
+            DisableScreenblurFade()
+            SetRainLevel(0.0)
+            SetWindSpeed(0.0)
+            Citizen.Wait(300)
+        else
+            Citizen.Wait(1500)
+        end
+    end
+end)
+
