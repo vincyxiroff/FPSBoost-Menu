@@ -3,7 +3,7 @@ local ox_lib = exports.ox_lib
 
 local function applyFPSBoost(level)
     if level == "ultra_low" then
-        if config.fpstimecycle_test then
+        if Config.fpstimecycle_test then
             SetTimecycleModifier('HicksbarNEW')
         end
         SetTimecycleModifier("yell_tunnel_nodirect")
@@ -122,7 +122,7 @@ end)
 
 Citizen.CreateThread(function()
     while true do
-        if config.clearpedandobj then
+        if Config.clearpedandobj then
             if fpsBoostActive then
                 local playerCoords = GetEntityCoords(PlayerPedId())
                 for ped in EnumerateEntities(FindFirstPed, FindNextPed, EndFindPed) do
