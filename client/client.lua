@@ -27,12 +27,7 @@ local function applyFPSBoost(level)
         SetLightsCutoffDistanceTweak(0.0)
         DistantCopCarSirens(false)
         if Config.FeatureExperimental then
-            SetShadowRendering(false)
-            SetTextureQuality(0)
-            SetPostProcessing(false)
-            SetHighResolutionShadows(false)
-            SetExtendedDistanceScaling(false)
-           SetVehicleDistantLights(false)
+            print("no Experimental feature")
         end
         fpsBoostActive = true
     elseif level == "medium" then
@@ -57,17 +52,18 @@ local function setUltraGraphics()
     ClearTimecycleModifier()
     SetArtificialLightsState(false)
     SetParticleFxNonLoopedAlpha(1.0)
+    OverrideLodscaleThisFrame(2.0) 
+    SetFlashLightFadeDistance(100.0) 
+    SetLightsCutoffDistanceTweak(100.0) 
+    CascadeShadowsSetCascadeBoundsScale(1.5) 
+    CascadeShadowsSetDynamicDepthValue(1.0) 
+    CascadeShadowsSetEntityTrackerScale(1.0)
+    DistantCopCarSirens(true) 
+    RopeDrawShadowEnabled(true)
+    SetTimecycleModifier('v_torture')
+    SetExtraTimecycleModifier('reflection_correct_ambient')
     if Config.FeatureExperimental then
-        OverrideLodscaleThisFrame(2.0) 
-        SetFlashLightFadeDistance(100.0) 
-        SetLightsCutoffDistanceTweak(100.0) 
-        CascadeShadowsSetCascadeBoundsScale(1.5) 
-        CascadeShadowsSetDynamicDepthValue(1.0) 
-        CascadeShadowsSetEntityTrackerScale(1.0)
-        DistantCopCarSirens(true) 
-        RopeDrawShadowEnabled(true)
-        SetTimecycleModifier('v_torture')
-        SetExtraTimecycleModifier('reflection_correct_ambient')
+        print("no Experimental feature")
     end
     fpsBoostActive = false
     fpsBoostnopedandobj = false
