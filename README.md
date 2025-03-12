@@ -1,6 +1,9 @@
 # FPS Boost Menu for FiveM
+FPS BOOST OFF:
+![image](https://github.com/user-attachments/assets/949dcc2d-b3dd-404a-b0b2-e503aa1fa67d)
 
-⚠ **Note**: Even though it may say "fork" somewhere, this is **not a fork** of any existing script. Initially, I planned to create a fork, but in the end, this script was built entirely from scratch by me.
+FPS BOOST ON:
+![image](https://github.com/user-attachments/assets/971d0f32-9417-48c6-9a29-514a1ed8002f)
 
 ## Overview
 This script provides a simple **FPS Boost menu** for FiveM, allowing players to optimize their game performance dynamically. The menu offers different levels of optimization, from **Ultra Low to High FPS Boost**, and also includes an **Ultra Graphics** mode to restore high-quality settings.
