@@ -168,6 +168,14 @@ end
 
 
 local function resetSettings()
+    OverrideLodscaleThisFrame(1.0)
+    DisableVehicleDistantlights(false)
+    ClearTimecycleModifier()
+    ClearExtraTimecycleModifier()
+    SetArtificialLightsState(false)
+    SetParticleFxNonLoopedAlpha(1.0)
+    fpsBoostActive = false
+    fpsBoostnopedandobj = false
     for obj in GetWorldObjects() do
         if GetEntityAlpha(obj) ~= 255 then
             SetEntityAlpha(obj, 255)
@@ -187,14 +195,6 @@ local function resetSettings()
         end
         Wait(0)
     end
-    OverrideLodscaleThisFrame(1.0)
-    DisableVehicleDistantlights(false)
-    ClearTimecycleModifier()
-    ClearExtraTimecycleModifier()
-    SetArtificialLightsState(false)
-    SetParticleFxNonLoopedAlpha(1.0)
-    fpsBoostActive = false
-    fpsBoostnopedandobj = false
 end
 
 local function EnumerateEntities(initFunc, moveFunc, disposeFunc)
@@ -217,7 +217,7 @@ lib.registerContext({
     id = 'fps_boost_menu',
     title = 'FPS Boost Menu',
     options = {
-        { title = 'TimeCycles', description = 'Several Time Cycle', icon = 'audio-description', onSelect = function() TimeCyclesMenuOpen() end},
+        { title = 'TimeCycles', description = 'Several Time Cycle', icon = 'audio-description', onSelect = function() menutimecycle() end},
         { title = 'Ultra Low Boost', description = 'Max FPS Boost', icon = 'rocket', onSelect = function() applyFPSBoost("ultra_low") lib.notify({ title = 'Ultra Low Boost', description = 'Boost FPS applicato.', type = 'success' }) end },
         { title = 'Medium Boost', description = 'Medium Boost', icon = 'tachometer-alt', onSelect = function() applyFPSBoost("medium") lib.notify({ title = 'Medium Boost', description = 'Boost FPS applicato.', type = 'success' }) end },
         { title = 'High Boost', description = 'Low Boost', icon = 'tachometer-alt', onSelect = function() applyFPSBoost("high") lib.notify({ title = 'High Boost', description = 'Boost FPS applicato.', type = 'success' }) end },
@@ -226,73 +226,75 @@ lib.registerContext({
     }
 })
 
-local TimeCyclesMenuOpen()
+function menutimecycle()
     lib.registerContext({
-        id = 'timecycle_menuu',
+        id = 'timecyclemenu',
         title = 'TimeCycles Menu',
-        {
-            title = 'Tunnel',
-            description = 'FPS BOOST',
-            icon = 'star',
-            onSelect = function()
-                ClearTimecycleModifier()
-                SetTimecycleModifier("yell_tunnel_nodirect")
-            end,
-        },
-        {
-            title = 'Cinema',
-            description = 'FPS BOOST',
-            icon = 'face-smile',
-            onSelect = function()
-                ClearExtraTimecycleModifier()
-                ClearTimecycleModifier()
-                SetTimecycleModifier("cinema")
-            end,
-        },
-        {
-            title = 'Life',
-            description = 'FPS BOOST',
-            icon = 'web-awesome',
-            onSelect = function()
-                ClearExtraTimecycleModifier()
-                ClearTimecycleModifier()
-                SetTimecycleModifier("LifeInvaderLOD")
-            end,
-        },
-        {
-            title = 'Reduce Distance',
-            description = 'FPS BOOST',
-            icon = 'circle',
-            onSelect = function()
-                ClearExtraTimecycleModifier()
-                ClearTimecycleModifier()
-                SetTimecycleModifier("ReduceDrawDistanceMission")
-            end,
-        },
-        {
-            title = 'PowerPlay Blend',
-            description = 'GRAPHIC',
-            icon = 'circle',
-            onSelect = function()
-                ClearExtraTimecycleModifier()
-                ClearTimecycleModifier()
-                SetTimecycleModifier("MP_Powerplay_blend")
-            end,
-        },
-        {
-            title = 'Tunnel',
-            description = 'Improved light',
-            icon = 'circle',
-            onSelect = function()
-                ClearExtraTimecycleModifier()
-                ClearTimecycleModifier()
-                SetTimecycleModifier("tunnel")
-                SetExtraTimecycleModifier("reflection_correct_ambient")
-            end,
+        options = {
+            {
+                title = 'Tunnel',
+                description = 'FPS BOOST',
+                icon = 'star',
+                onSelect = function()
+                    ClearTimecycleModifier()
+                    SetTimecycleModifier("yell_tunnel_nodirect")
+                end,
+            },
+            {
+                title = 'Cinema',
+                description = 'FPS BOOST',
+                icon = 'face-smile',
+                onSelect = function()
+                    ClearExtraTimecycleModifier()
+                    ClearTimecycleModifier()
+                    SetTimecycleModifier("cinema")
+                end,
+            },
+            {
+                title = 'Life',
+                description = 'FPS BOOST',
+                icon = 'web-awesome',
+                onSelect = function()
+                    ClearExtraTimecycleModifier()
+                    ClearTimecycleModifier()
+                    SetTimecycleModifier("LifeInvaderLOD")
+                end,
+            },
+            {
+                title = 'Reduce Distance',
+                description = 'FPS BOOST',
+                icon = 'circle',
+                onSelect = function()
+                    ClearExtraTimecycleModifier()
+                    ClearTimecycleModifier()
+                    SetTimecycleModifier("ReduceDrawDistanceMission")
+                end,
+            },
+            {
+                title = 'PowerPlay Blend',
+                description = 'GRAPHIC',
+                icon = 'circle',
+                onSelect = function()
+                    ClearExtraTimecycleModifier()
+                    ClearTimecycleModifier()
+                    SetTimecycleModifier("MP_Powerplay_blend")
+                end,
+            },
+            {
+                title = 'Tunnel',
+                description = 'Improved light',
+                icon = 'circle',
+                onSelect = function()
+                    ClearExtraTimecycleModifier()
+                    ClearTimecycleModifier()
+                    SetTimecycleModifier("tunnel")
+                    SetExtraTimecycleModifier("reflection_correct_ambient")
+                end,
+            }
         }
-
-        lib.showContext('timecycle_menuu')
     })
+
+    lib.showContext('timecyclemenu')
 end
 
 RegisterCommand('fps', function()
