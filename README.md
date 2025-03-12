@@ -18,7 +18,7 @@ This script provides a simple **FPS Boost menu** for FiveM, allowing players to 
 (ill do it but no rn)
 
 ## Installation
-1. **Download & Extract** the resource into your `resources` folder.
+1. **Download from the relases & Extract** the resource into your `resources` folder.
 2. **Ensure Dependencies**:
    - `ox_lib` (Required) → [Download Here](https://github.com/overextended/ox_lib)
 3. **Add to `server.cfg`**:
