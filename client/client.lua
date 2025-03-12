@@ -1,4 +1,4 @@
-local ESX = exports['es_extended']:getSharedObject()
+
 local ox_lib = exports.ox_lib
 local XPedId = PlayerPedId()
 local XPedCords = GetEntityCoords(XPedId)
