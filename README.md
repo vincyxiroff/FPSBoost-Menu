@@ -2,7 +2,7 @@
 FPS BOOST OFF:
 ![image](https://github.com/user-attachments/assets/949dcc2d-b3dd-404a-b0b2-e503aa1fa67d)
 
-FPS BOOST ON:
+FPS BOOST ON (+47 FPS):
 ![image](https://github.com/user-attachments/assets/971d0f32-9417-48c6-9a29-514a1ed8002f)
 
 ## Overview
