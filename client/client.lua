@@ -100,7 +100,7 @@ end
 
 local function applyFPSBoost(level)
     if level == "ultra_low" then
-        SetTimecycleModifier("yell_tunnel_nodirect")
+        SetTimecycleModifier("ReduceDrawDistanceMission")
         modifyWorldObjects(210,90)
         modifyWorldPeds(245, 60)
         modifyWorldVehicles(255, 120)
@@ -132,8 +132,8 @@ local function applyFPSBoost(level)
         SetReduceVehicleModelBudget(false)
         SetParticleFxNonLoopedAlpha(0.5)
         OverrideLodscaleThisFrame(0.6)
-        fpsBoostActive = false
-        fpsBoostnopedandobj = true
+        fpsBoostActive = true
+        fpsBoostnopedandobj = false
     elseif level == "high" then
         ClearTimecycleModifier()
         modifyWorldObjects(245,200)
@@ -213,18 +213,21 @@ local function EnumerateEntities(initFunc, moveFunc, disposeFunc)
     end)
 end
 
-lib.registerContext({
-    id = 'fps_boost_menu',
-    title = 'FPS Boost Menu',
-    options = {
-        { title = 'TimeCycles', description = 'Several Time Cycle', icon = 'audio-description', onSelect = function() menutimecycle() end},
-        { title = 'Ultra Low Boost', description = 'Max FPS Boost', icon = 'rocket', onSelect = function() applyFPSBoost("ultra_low") lib.notify({ title = 'Ultra Low Boost', description = 'Boost FPS applicato.', type = 'success' }) end },
-        { title = 'Medium Boost', description = 'Medium Boost', icon = 'tachometer-alt', onSelect = function() applyFPSBoost("medium") lib.notify({ title = 'Medium Boost', description = 'Boost FPS applicato.', type = 'success' }) end },
-        { title = 'High Boost', description = 'Low Boost', icon = 'tachometer-alt', onSelect = function() applyFPSBoost("high") lib.notify({ title = 'High Boost', description = 'Boost FPS applicato.', type = 'success' }) end },
-        { title = 'Graphics', description = 'Best Graphics', icon = 'star', onSelect = function() setUltraGraphics() lib.notify({ title = 'Graphics', description = 'Qualità grafica impostata al massimo.', type = 'success' }) end },
-        { title = 'Reset', description = 'Reset', icon = 'undo', onSelect = function() resetSettings() lib.notify({ title = 'Reset', description = 'Impostazioni ripristinate.', type = 'success' }) end }
-    }
-})
+function fpsmenu()
+    lib.registerContext({
+        id = 'fps_boost_menu',
+        title = 'FPS Boost Menu',
+        options = {
+            { title = 'TimeCycles', description = 'Several Time Cycle', icon = 'audio-description', onSelect = function() menutimecycle() end},
+            { title = 'Ultra Low Boost', description = 'Max FPS Boost', icon = 'rocket', onSelect = function() applyFPSBoost("ultra_low") lib.notify({ title = 'Ultra Low Boost', description = 'Boost FPS applicato.', type = 'success' }) end },
+            { title = 'Medium Boost', description = 'Medium Boost', icon = 'tachometer-alt', onSelect = function() applyFPSBoost("medium") lib.notify({ title = 'Medium Boost', description = 'Boost FPS applicato.', type = 'success' }) end },
+            { title = 'High Boost', description = 'Low Boost', icon = 'tachometer-alt', onSelect = function() applyFPSBoost("high") lib.notify({ title = 'High Boost', description = 'Boost FPS applicato.', type = 'success' }) end },
+            { title = 'Graphics', description = 'Best Graphics', icon = 'star', onSelect = function() setUltraGraphics() lib.notify({ title = 'Graphics', description = 'Qualità grafica impostata al massimo.', type = 'success' }) end },
+            { title = 'Reset', description = 'Reset', icon = 'undo', onSelect = function() resetSettings() lib.notify({ title = 'Reset', description = 'Impostazioni ripristinate.', type = 'success' }) end }
+        }
+    })
+    lib.showContext('fps_boost_menu')
+end
 
 function menutimecycle()
     lib.registerContext({
@@ -298,12 +301,12 @@ function menutimecycle()
 end
 
 RegisterCommand('fps', function()
-    lib.showContext('fps_boost_menu')
-end, false)
+    fpsmenu()
+end)
 
 RegisterNetEvent('fpsboost:openMenu')
 AddEventHandler('fpsboost:openMenu', function()
-    lib.showContext('fps_boost_menu')
+    fpsmenu()
 end)
 
 /*Citizen.CreateThread(function()
@@ -419,4 +422,3 @@ Citizen.CreateThread(function()
         end
     end
 end)
-
