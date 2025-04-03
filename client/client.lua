@@ -309,58 +309,6 @@ AddEventHandler('fpsboost:openMenu', function()
     fpsmenu()
 end)
 
-/*Citizen.CreateThread(function()
-    while true do
-        if Config.clearpedandobj then
-            if fpsBoostActive then
-                local playerCoords = GetEntityCoords(PlayerPedId())
-                for ped in EnumerateEntities(FindFirstPed, FindNextPed, EndFindPed) do
-                    local pedCoords = GetEntityCoords(ped)
-                    local distance = #(playerCoords - pedCoords)
-                    if distance > 100.0 then
-                        SetEntityAlpha(ped, 0)
-                        SetEntityAsNoLongerNeeded(ped)
-                    elseif distance > 50.0 then
-                        if not IsEntityOnScreen(ped) then
-                            SetEntityAlpha(ped, 0)
-                            SetEntityAsNoLongerNeeded(ped)
-                        else
-                            SetEntityAlpha(ped, 210)
-                        end
-                        SetPedAoBlobRendering(ped, false)
-                    end
-                    Citizen.Wait(1)
-                end
-                for obj in EnumerateEntities(FindFirstObject, FindNextObject, EndFindObject) do
-                    local objCoords = GetEntityCoords(obj)
-                    local distance = #(playerCoords - objCoords)
-                    if distance > 100.0 then
-                        SetEntityAlpha(obj, 0)
-                        SetEntityAsNoLongerNeeded(obj)
-                        SetModelAsNoLongerNeeded(GetEntityModel(obj))
-                    elseif distance > 50.0 then
-                        if not IsEntityOnScreen(obj) then
-                            SetEntityAlpha(obj, 0)
-                            SetEntityAsNoLongerNeeded(obj)
-                            SetModelAsNoLongerNeeded(GetEntityModel(obj))
-                        else
-                            SetEntityAlpha(obj, 170)
-                        end
-                    end
-                    Citizen.Wait(1)
-                end
-                DisableOcclusionThisFrame()
-                SetDisableDecalRenderingThisFrame()
-                RemoveParticleFxInRange(playerCoords, 10.0)
-                OverrideLodscaleThisFrame(0.1)
-                SetStreamedTextureDictAsNoLongerNeeded("all")
-                SetArtificialLightsState(true)
-            end
-        end
-        Citizen.Wait(8)
-    end
-end)*/
-
 Citizen.CreateThread(function()
     while true do
         if fpsBoostActive then
@@ -422,3 +370,58 @@ Citizen.CreateThread(function()
         end
     end
 end)
+
+
+--                            NOT USED
+
+/*Citizen.CreateThread(function()
+    while true do
+        if Config.clearpedandobj then
+            if fpsBoostActive then
+                local playerCoords = GetEntityCoords(PlayerPedId())
+                for ped in EnumerateEntities(FindFirstPed, FindNextPed, EndFindPed) do
+                    local pedCoords = GetEntityCoords(ped)
+                    local distance = #(playerCoords - pedCoords)
+                    if distance > 100.0 then
+                        SetEntityAlpha(ped, 0)
+                        SetEntityAsNoLongerNeeded(ped)
+                    elseif distance > 50.0 then
+                        if not IsEntityOnScreen(ped) then
+                            SetEntityAlpha(ped, 0)
+                            SetEntityAsNoLongerNeeded(ped)
+                        else
+                            SetEntityAlpha(ped, 210)
+                        end
+                        SetPedAoBlobRendering(ped, false)
+                    end
+                    Citizen.Wait(1)
+                end
+                for obj in EnumerateEntities(FindFirstObject, FindNextObject, EndFindObject) do
+                    local objCoords = GetEntityCoords(obj)
+                    local distance = #(playerCoords - objCoords)
+                    if distance > 100.0 then
+                        SetEntityAlpha(obj, 0)
+                        SetEntityAsNoLongerNeeded(obj)
+                        SetModelAsNoLongerNeeded(GetEntityModel(obj))
+                    elseif distance > 50.0 then
+                        if not IsEntityOnScreen(obj) then
+                            SetEntityAlpha(obj, 0)
+                            SetEntityAsNoLongerNeeded(obj)
+                            SetModelAsNoLongerNeeded(GetEntityModel(obj))
+                        else
+                            SetEntityAlpha(obj, 170)
+                        end
+                    end
+                    Citizen.Wait(1)
+                end
+                DisableOcclusionThisFrame()
+                SetDisableDecalRenderingThisFrame()
+                RemoveParticleFxInRange(playerCoords, 10.0)
+                OverrideLodscaleThisFrame(0.1)
+                SetStreamedTextureDictAsNoLongerNeeded("all")
+                SetArtificialLightsState(true)
+            end
+        end
+        Citizen.Wait(8)
+    end
+end)*/
