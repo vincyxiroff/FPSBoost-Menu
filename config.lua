@@ -53,3 +53,8 @@ Config.CullingBatch = {
     maxPerTick = 120,
     tickWaitMs = 0
 }
+
+Config.VersionCheck = {
+    enabled = true,
+    url = 'https://raw.githubusercontent.com/vincyxiroff/FPSBoost-Menu/main/fxmanifest.lua'
+}

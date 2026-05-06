@@ -15,6 +15,10 @@ client_scripts {
         'client/client.lua',
 }
 
+server_scripts {
+	'server/version_check.lua',
+}
+
 ui_page 'web/index.html'
 
 files {

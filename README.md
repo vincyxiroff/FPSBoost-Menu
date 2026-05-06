@@ -43,6 +43,7 @@ Edit `config.lua`:
 - `Config.Culling.enabled` + `Config.Culling.aggressive`: enable/disable and aggressiveness of entity handling
 - `Config.CullingProfiles`: per-profile distances/alpha (ultra_low / medium / high)
 - `Config.CullingBatch`: batching settings (`maxPerTick`, `tickWaitMs`)
+- `Config.VersionCheck`: version check on start (prints ASCII in server console when outdated)
 
 ## Notes
 - Aggressive culling may cause side effects on some servers/maps depending on entity usage. If you notice issues, set `Config.Culling.aggressive = false` or disable culling entirely.
