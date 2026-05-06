@@ -13,9 +13,11 @@ This script provides an advanced **FPS Boost menu** for FiveM, allowing players 
 ✅ **Ultra Graphics Mode**: Restore the best possible graphics settings.  
 ✅ **Reset Option**: Easily revert to default settings.  
 ✅ **Entity Optimization**: Removes unnecessary entities at a distance for better performance.  
-✅ **Real-time Adjustments**: Applies optimizations dynamically while playing.  
-✅ **Standalone & Lightweight**: Works independently with **ox_lib** as the only dependency.  
-✅ **User-friendly Menu**: Uses **ox_lib** for an intuitive and clean UI.
+✅ **Culling batching**: Processes entities in batches to reduce FPS spikes while applying profiles.  
+✅ **Profile persistence (KVP)**: Automatically restores the last selected profile on resource start (configurable).  
+✅ **Premium NUI**: Modern in-game UI (HTML) with tabs and search for timecycles.  
+✅ **IT/EN UI**: Built-in translations for both NUI and ox_lib menu (configurable).  
+✅ **Config-driven**: UI mode, command, keybind, locale, culling presets and batching are controlled via `config.lua`.
 
 
 ## Installation
@@ -24,12 +26,26 @@ This script provides an advanced **FPS Boost menu** for FiveM, allowing players 
    - `ox_lib` (Required) → [Download Here](https://github.com/overextended/ox_lib)
 3. **Add to `server.cfg`**:
 `ensure Fpsboost-Menu`
-4. **Start FiveM and use `/fps` to open the menu.**
+4. **Start FiveM and use your configured command (default: `/fps`) to open the menu.**
 
 ## Commands
-- `/fps` → Opens the FPS Boost Menu
+- `/<Config.CommandName>` (default: `/fps`) → Opens the FPS Boost Menu (NUI/ox/both depending on config)
 - `fpsboost:openMenu` (Event) → Opens the menu programmatically
+
+## Configuration
+Edit `config.lua`:
+
+- `Config.UiMode`: `nui` / `ox` / `both`
+- `Config.Locale`: `it` / `en` / `auto` (uses convar `locale`, with optional saved override from the NUI)
+- `Config.CommandName`: command to open the menu (default: `fps`)
+- `Config.EnableKeybind` + `Config.Keybind`: optional key mapping (default key: `F7`)
+- `Config.SaveProfileKvp` + `Config.ProfileKvpKey`: save/restore last profile
+- `Config.Culling.enabled` + `Config.Culling.aggressive`: enable/disable and aggressiveness of entity handling
+- `Config.CullingProfiles`: per-profile distances/alpha (ultra_low / medium / high)
+- `Config.CullingBatch`: batching settings (`maxPerTick`, `tickWaitMs`)
+
+## Notes
+- Aggressive culling may cause side effects on some servers/maps depending on entity usage. If you notice issues, set `Config.Culling.aggressive = false` or disable culling entirely.
 
 ## Dependencies
 - [ox_lib](https://github.com/overextended/ox_lib)
-

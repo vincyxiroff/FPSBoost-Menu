@@ -15,6 +15,14 @@ client_scripts {
         'client/client.lua',
 }
 
+ui_page 'web/index.html'
+
+files {
+	'web/index.html',
+	'web/styles.css',
+	'web/app.js',
+}
+
 dependencies {
 	'ox_lib',
 }
